@@ -5,3 +5,4 @@ logs
 
 # React Router
 /build/
+/uploads/*

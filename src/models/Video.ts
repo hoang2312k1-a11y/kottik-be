@@ -7,6 +7,8 @@ export interface IVideo extends Document {
   description?: string;
   thumbnail?: string;
   createdAt: Date;
+  likes: number;
+  likedBy: mongoose.Types.ObjectId[];
 }
 
 const VideoSchema = new Schema<IVideo>(
@@ -16,6 +18,8 @@ const VideoSchema = new Schema<IVideo>(
     publicId: { type: String, required: true },
     description: { type: String },
     thumbnail: { type: String },
+    likes: { type: Number, default: 0 },
+    likedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: { createdAt: true, updatedAt: false } },
 );

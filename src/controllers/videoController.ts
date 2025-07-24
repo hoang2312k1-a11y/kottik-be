@@ -5,6 +5,7 @@ import { AuthRequest } from '../middleware/auth';
 import Follow from '../models/Follow';
 import { success, error } from '../utils/response';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
 export const uploadVideo = async (req: AuthRequest, res: Response) => {
   try {
@@ -22,7 +23,7 @@ export const uploadVideo = async (req: AuthRequest, res: Response) => {
     });
     await video.save();
     res.status(201).json(success(video, 'Upload video thành công!', 201));
-  } catch {
+  } catch(e) {
     res.status(500).json(error('Lỗi upload video.', 500));
   }
 };
@@ -66,5 +67,44 @@ export const getUserVideos = async (req: Request, res: Response) => {
     res.json(success(videos, 'Lấy video của user thành công!'));
   } catch {
     res.status(500).json(error('Lỗi lấy video user.', 500));
+  }
+};
+
+export const getFeedFollowing = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    const following = await Follow.find({ user: userId }).select('following');
+    const followingIds = following.map(f => f.following);
+    if (followingIds.length === 0) {
+      return res.json(success([], 'Bạn chưa theo dõi ai.'));
+    }
+    const videos = await Video.find({ user: { $in: followingIds } })
+      .sort({ createdAt: -1 })
+      .populate('user', 'username avatar');
+    res.json(success(videos, 'Lấy video following thành công!'));
+  } catch {
+    res.status(500).json(error('Lỗi lấy video following.', 500));
+  }
+};
+
+export const likeVideo = async (req: AuthRequest, res: Response) => {
+  try {
+    const videoId = req.params.id;
+    const userId = req.userId;
+    const video = await Video.findById(videoId);
+    if (!video) return res.status(404).json(error('Video không tồn tại.', 404));
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+    const liked = video.likedBy.some((id) => id.equals(userObjectId));
+    if (liked) {
+      video.likedBy = video.likedBy.filter((id) => !id.equals(userObjectId));
+      video.likes = Math.max(0, video.likes - 1);
+    } else {
+      video.likedBy.push(userObjectId);
+      video.likes += 1;
+    }
+    await video.save();
+    res.json(success({ likes: video.likes, liked: !liked }, liked ? 'Đã bỏ like.' : 'Đã like.'));
+  } catch {
+    res.status(500).json(error('Lỗi like video.', 500));
   }
 };

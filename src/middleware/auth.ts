@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { error } from "../utils/response";
+import dotenv from "dotenv";
+dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
@@ -14,6 +16,7 @@ export const authenticate = (
   next: NextFunction,
 ) => {
   const authHeader = req.headers.authorization;
+
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json(error("Không có token xác thực.", 401));
   }

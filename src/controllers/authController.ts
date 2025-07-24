@@ -3,12 +3,15 @@ import User from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { success, error } from "../utils/response";
+import dotenv from "dotenv";
+dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
+const DEFAULT_AVATAR = 'https://res.cloudinary.com/dziqpah14/image/upload/fl_preserve_transparency/v1753281314/Sample_User_Icon_epwud4.jpg?_s=public-apps';
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, avatar } = req.body;
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
       return res
@@ -20,7 +23,7 @@ export const register = async (req: Request, res: Response) => {
         );
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, email, password: hashedPassword });
+    const user = new User({ username, email, password: hashedPassword, avatar: avatar || DEFAULT_AVATAR });
     await user.save();
     return res.status(201).json(success(null, "Đăng ký thành công!", 201));
   } catch {

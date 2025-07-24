@@ -4,6 +4,8 @@ import {
   uploadVideo,
   getFeed,
   getUserVideos,
+  getFeedFollowing,
+  likeVideo,
 } from "../controllers/videoController";
 import { authenticate } from "../middleware/auth";
 import { validateRequest } from "../middleware/validate";
@@ -23,7 +25,17 @@ router.post(
   validateRequest,
   uploadVideo,
 );
+router.post(
+  "/:id/like",
+  authenticate,
+  likeVideo,
+);
 router.get("/feed", getFeed);
+router.get(
+  "/feed/following",
+  authenticate,
+  getFeedFollowing,
+);
 router.get(
   "/user/:userId",
   userIdParamValidator,

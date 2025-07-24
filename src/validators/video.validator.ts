@@ -1,7 +1,7 @@
 import { body, param } from "express-validator";
 
 export const uploadVideoValidator = [
-  body("description").optional().isString().withMessage("Mô tả phải là chuỗi"),
+  body("description").notEmpty().isString().withMessage("Mô tả là bắt buộc"),
 ];
 
 export const userIdParamValidator = [
