@@ -7,22 +7,18 @@ export const followUser = async (req: AuthRequest, res: Response) => {
   try {
     const { userId } = req.body;
     if (req.userId === userId)
-      return res
-        .status(400)
-        .json(
-          error("Không thể tự follow chính mình.", 400, {
-            userId: ["Không thể tự follow chính mình."],
-          }),
-        );
+      return res.status(400).json(
+        error("Không thể tự follow chính mình.", 400, {
+          userId: ["Không thể tự follow chính mình."],
+        }),
+      );
     const exist = await Follow.findOne({ user: req.userId, following: userId });
     if (exist)
-      return res
-        .status(400)
-        .json(
-          error("Đã follow người này.", 400, {
-            userId: ["Đã follow người này."],
-          }),
-        );
+      return res.status(400).json(
+        error("Đã follow người này.", 400, {
+          userId: ["Đã follow người này."],
+        }),
+      );
     await Follow.create({ user: req.userId, following: userId });
     res.json(success(null, "Đã follow."));
   } catch {

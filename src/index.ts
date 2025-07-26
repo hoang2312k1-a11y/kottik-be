@@ -7,11 +7,11 @@ import userRoutes from "./routes/user";
 import videoRoutes from "./routes/video";
 import followRoutes from "./routes/follow";
 import commentRoutes from "./routes/comment";
-import morgan from 'morgan';
-import logger from './utils/logger';
-import fs from 'fs';
-import path from 'path';
-import { Request, Response, NextFunction } from 'express';
+import morgan from "morgan";
+import logger from "./utils/logger";
+import fs from "fs";
+import path from "path";
+import { Request, Response } from "express";
 
 dotenv.config();
 
@@ -27,13 +27,16 @@ mongoose
   .catch((err) => console.error("Kết nối MongoDB thất bại:", err));
 
 // Tạo thư mục logs nếu chưa có
-if (!fs.existsSync(path.join(__dirname, '../logs'))) {
-  fs.mkdirSync(path.join(__dirname, '../logs'));
+if (!fs.existsSync(path.join(__dirname, "../logs"))) {
+  fs.mkdirSync(path.join(__dirname, "../logs"));
 }
 // Morgan log request ra file và console
-const accessLogStream = fs.createWriteStream(path.join(__dirname, '../logs/access.log'), { flags: 'a' });
-app.use(morgan('combined', { stream: accessLogStream }));
-app.use(morgan('dev'));
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "../logs/access.log"),
+  { flags: "a" },
+);
+app.use(morgan("combined", { stream: accessLogStream }));
+app.use(morgan("dev"));
 
 app.use(cors());
 app.use(express.json());
@@ -42,16 +45,22 @@ app.use("/api/users", userRoutes);
 app.use("/api/videos", videoRoutes);
 app.use("/api/follow", followRoutes);
 app.use("/api/comments", commentRoutes);
-app.use("/api/search", require("./routes/search").default);
+import searchRoutes from "./routes/search";
+app.use("/api/search", searchRoutes);
 
 app.get("/", (req, res) => {
   res.send("TikTok Clone API is running!");
 });
 
 // Log lỗi hệ thống
-app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+app.use((err: unknown, req: Request, res: Response) => {
   logger.error((err as Error).stack || err);
-  res.status(500).json({ code: 500, success: false, message: 'Lỗi server nội bộ', errors: undefined });
+  res.status(500).json({
+    code: 500,
+    success: false,
+    message: "Lỗi server nội bộ",
+    errors: undefined,
+  });
 });
 
 app.listen(PORT, () => {

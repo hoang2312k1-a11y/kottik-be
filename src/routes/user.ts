@@ -1,5 +1,11 @@
 import express from "express";
-import { getMe, updateMe, getUserProfile, updatePassword, uploadAvatar } from "../controllers/userController";
+import {
+  getMe,
+  updateMe,
+  getUserProfile,
+  updatePassword,
+  uploadAvatar,
+} from "../controllers/userController";
 import { authenticate } from "../middleware/auth";
 import { validateRequest } from "../middleware/validate";
 import {

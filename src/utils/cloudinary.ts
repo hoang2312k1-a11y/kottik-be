@@ -13,27 +13,34 @@ cloudinary.config({
   secure: true,
 });
 
-export const uploadWithRetry = (file: File, folder: string, resourceType: 'image' | 'video' = 'image', retries: number = 0): Promise<UploadApiResponse> => {
+export const uploadWithRetry = (
+  file: File,
+  folder: string,
+  resourceType: "image" | "video" = "image",
+  retries: number = 0,
+): Promise<UploadApiResponse> => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { 
-        resource_type: resourceType, 
-        folder: folder 
+      {
+        resource_type: resourceType,
+        folder: folder,
       },
       (err, result) => {
         if (err) {
           if (retries < MAX_RETRIES) {
             console.log(`Retrying upload... Attempt ${retries + 1}`);
-            return resolve(uploadWithRetry(file, folder, resourceType, retries + 1));
+            return resolve(
+              uploadWithRetry(file, folder, resourceType, retries + 1),
+            );
           }
           return reject(err);
         }
         if (result) {
           resolve(result); // resolve với result có kiểu UploadApiResponse
         } else {
-          reject(new Error('No result from Cloudinary'));
+          reject(new Error("No result from Cloudinary"));
         }
-      }
+      },
     );
     stream.end(file.buffer);
   });

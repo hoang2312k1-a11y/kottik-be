@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Comment from "../models/Comment";
 import { AuthRequest } from "../middleware/auth";
 import { success, error } from "../utils/response";
-import { IComment } from '../models/Comment';
+import { IComment } from "../models/Comment";
 
 // Thêm comment hoặc reply
 export const addComment = async (req: AuthRequest, res: Response) => {

@@ -27,6 +27,6 @@ export const authenticate = (
     req.userId = decoded.userId;
     next();
   } catch {
-    return res.status(401).json(error('Token không hợp lệ.', 401));
+    return res.status(401).json(error("Token không hợp lệ.", 401));
   }
 };
