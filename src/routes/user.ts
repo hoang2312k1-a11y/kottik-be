@@ -9,7 +9,7 @@ import {
 import multer from "multer";
 import { updatePasswordValidator } from "../validators/user.validator";
 
-const upload = multer({ dest: "uploads/" });
+const memoryUpload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ router.patch(
 router.post(
   "/me/avatar",
   authenticate,
-  upload.single("avatar"),
+  memoryUpload.single("avatar"),
   uploadAvatar,
 );
 router.get("/:id", userIdParamValidator, validateRequest, getUserProfile);

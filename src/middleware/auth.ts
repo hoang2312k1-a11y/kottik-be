@@ -8,6 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
 export interface AuthRequest extends Request {
   userId?: string;
+  isAborted?: boolean;
 }
 
 export const authenticate = (

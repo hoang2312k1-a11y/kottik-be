@@ -15,12 +15,15 @@ import {
 } from "../validators/video.validator";
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
+const memoryUpload = multer({ storage: multer.memoryStorage(),limits: { fileSize: 100 * 1024 * 1024 } });
 
 router.post(
   "/upload",
   authenticate,
-  upload.single("video"),
+  memoryUpload.fields([
+    { name: 'video', maxCount: 1 },
+    { name: 'thumbnail', maxCount: 1 }
+  ]),
   uploadVideoValidator,
   validateRequest,
   uploadVideo,

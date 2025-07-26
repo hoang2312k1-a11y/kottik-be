@@ -42,6 +42,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/videos", videoRoutes);
 app.use("/api/follow", followRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/search", require("./routes/search").default);
 
 app.get("/", (req, res) => {
   res.send("TikTok Clone API is running!");

@@ -75,3 +75,7 @@ export const login = async (req: Request, res: Response) => {
     return res.status(500).json(error('Lỗi server.', 500));
   }
 };
+
+export const logout = async (req: Request, res: Response) => {
+  return res.json(success(null, 'Đăng xuất thành công!'));
+};
