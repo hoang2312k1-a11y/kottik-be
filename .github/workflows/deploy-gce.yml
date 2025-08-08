@@ -32,21 +32,22 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
 
+
       - name: Build Docker image
         run: |
-          docker build -t us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA .
+          docker build -t us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA .
 
       - name: Push Docker image
         run: |
-          gcloud auth configure-docker us-docker.pkg.dev
-          docker push us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA
+          gcloud auth configure-docker us-west1-docker.pkg.dev
+          docker push us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA
 
       - name: Deploy to GCE VM
         run: |
           gcloud compute ssh ${{ secrets.GCE_INSTANCE_NAME }} --zone=${{ secrets.GCE_ZONE }} --command 'echo "${{ secrets.ENV_FILE }}" > /home/ubuntu/tiktok.env && chmod 600 /home/ubuntu/tiktok.env'
           gcloud compute ssh ${{ secrets.GCE_INSTANCE_NAME }} --zone=${{ secrets.GCE_ZONE }} --command "\
-            docker pull us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA && \
+            docker pull us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA && \
             docker stop tiktok-backend || true && \
             docker rm tiktok-backend || true && \
-            docker run -d --name tiktok-backend -p 80:5000 --env-file /home/ubuntu/tiktok.env us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA\
+            docker run -d --name tiktok-backend -p 80:5000 --env-file /home/ubuntu/tiktok.env us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA\
           "
