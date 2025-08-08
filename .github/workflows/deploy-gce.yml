@@ -42,9 +42,10 @@ jobs:
 
       - name: Deploy to GCE VM
         run: |
+          gcloud compute ssh ${{ secrets.GCE_INSTANCE_NAME }} --zone=${{ secrets.GCE_ZONE }} --command 'echo "${{ secrets.ENV_FILE }}" > /home/ubuntu/tiktok.env && chmod 600 /home/ubuntu/tiktok.env'
           gcloud compute ssh ${{ secrets.GCE_INSTANCE_NAME }} --zone=${{ secrets.GCE_ZONE }} --command "\
             docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend:$GITHUB_SHA && \
             docker stop tiktok-backend || true && \
             docker rm tiktok-backend || true && \
-            docker run -d --name tiktok-backend -p 80:5000 --env-file /path/to/.env gcr.io/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend:$GITHUB_SHA\
+            docker run -d --name tiktok-backend -p 80:5000 --env-file /home/ubuntu/tiktok.env gcr.io/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend:$GITHUB_SHA\
           "
