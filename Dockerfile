@@ -10,11 +10,14 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci
 
-# Copy source code
+# Copy all source code (ensure src and tsconfig.json are included)
 COPY . .
 
-# Build TypeScript
+# Build TypeScript (ensure dist/index.js is created)
 RUN npm run build
+
+# Verify build output exists (for debug, optional)
+RUN ls -l dist && ls -l dist/index.js || exit 1
 
 # Expose port (change if your app uses a different port)
 EXPOSE 5000
