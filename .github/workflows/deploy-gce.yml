@@ -51,5 +51,5 @@ jobs:
             docker pull us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA && \
             docker stop tiktok-backend || true && \
             docker rm tiktok-backend || true && \
-            docker run -d --name tiktok-backend -p 80:5000 --env-file /tmp/tiktok.env us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA\
+            docker run -d --name tiktok-backend -p 5000:5000 --env-file /tmp/tiktok.env us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA\
           "
