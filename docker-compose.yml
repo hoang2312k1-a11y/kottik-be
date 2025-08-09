@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  backend:
+    image: us-west1-docker.pkg.dev/prime-hologram-467111-s4/tiktok-backend/tiktok-backend:latest
+    container_name: tiktok-backend
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    networks:
+      - tiktok-net
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: tiktok_clone
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - tiktok-net
+
+volumes:
+  mongo_data:
+
+networks:
+  tiktok-net:
+    driver: bridge
