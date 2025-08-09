@@ -53,8 +53,12 @@ app.get("/", (req, res) => {
 });
 
 // Log lỗi hệ thống
-app.use((err: unknown, req: Request, res: Response) => {
-  logger.error((err as Error).stack || err);
+app.use((err: unknown, req: Request, res: Response, next: Function) => {
+  logger.error(
+    err instanceof Error
+      ? err.stack || err.message
+      : JSON.stringify(err)
+  );
   res.status(500).json({
     code: 500,
     success: false,
