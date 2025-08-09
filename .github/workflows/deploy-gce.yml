@@ -35,12 +35,14 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA .
+          docker build -t us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA \
+                         -t us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:latest .
 
       - name: Push Docker image
         run: |
           gcloud auth configure-docker us-west1-docker.pkg.dev
           docker push us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA
+          docker push us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:latest
 
       - name: Deploy to GCE VM
         run: |
@@ -48,8 +50,11 @@ jobs:
             echo '${{ secrets.ENV_FILE }}' > /tmp/tiktok.env && \
             chmod 600 /tmp/tiktok.env && \
             gcloud auth configure-docker us-west1-docker.pkg.dev && \
-            docker pull us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA && \
-            docker stop tiktok-backend || true && \
-            docker rm tiktok-backend || true && \
-            docker run -d --name tiktok-backend -p 5000:5000 --env-file /tmp/tiktok.env us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/tiktok-backend/tiktok-backend:$GITHUB_SHA\
+            docker network create tiktok-net || true && \
+            docker rm -f mongodb || true && \
+            docker run -d --name mongodb --network tiktok-net -p 27017:27017 -v mongo_data:/data/db -e MONGO_INITDB_DATABASE=tiktok_clone mongo:latest && \
+            docker rm -f tiktok-backend || true && \
+            echo '${{ secrets.ENV_FILE }}' > /tmp/tiktok.env && \
+            chmod 600 /tmp/tiktok.env && \
+            docker run -d --name tiktok-backend --network tiktok-net -p 5000:5000 --env-file /tmp/tiktok.env us-west1-docker.pkg.dev/prime-hologram-467111-s4/tiktok-backend/tiktok-backend:latest
           "
